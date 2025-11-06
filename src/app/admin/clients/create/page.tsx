@@ -312,7 +312,7 @@ export default function CreateClientPage() {
                 <div>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">URL à envoyer au client:</p>
                   <div className="bg-gray-100 dark:bg-gray-800 p-4 text-sm font-mono break-all border border-gray-300 dark:border-gray-600">
-                    http://localhost:3000/magic/{magicLink}
+                    {typeof window !== 'undefined' ? window.location.origin : 'https://www.cryptonm.ch'}/magic/{magicLink}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
                     ⚠️ Enregistrez ce lien avant de créer le client
