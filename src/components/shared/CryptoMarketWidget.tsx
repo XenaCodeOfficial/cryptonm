@@ -128,7 +128,7 @@ export default function CryptoMarketWidget() {
     labels: historicalData.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })),
     datasets: [
       {
-        label: selectedCrypto,
+        label: selectedCrypto || undefined,
         data: historicalData.map(d => d.price),
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
