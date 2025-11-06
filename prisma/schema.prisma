@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String
+  avatar        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Client {
+  id                     String         @id @default(cuid())
+  email                  String         @unique
+  password               String?
+  firstName              String
+  lastName               String
+  age                    Int?
+  gender                 String?
+  nationality            String?
+  riskLevel              String         // low, medium, high
+  budget                 Float
+  commissionPercent      Float          @default(0)
+  avatar                 String?
+  magicLink              String         @unique
+
+  // Stats fields (calculated from transactions)
+  totalInvested          Float          @default(0)
+  totalCurrentValue      Float          @default(0)
+  totalProfitLoss        Float          @default(0)
+  totalProfitLossPercent Float          @default(0)
+  totalFees              Float          @default(0)
+
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  transactions           Transaction[]
+  clientStats            ClientStats?
+}
+
+model ClientStats {
+  id                   String   @id @default(cuid())
+  clientId             String   @unique
+  client               Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  totalInvested        Float    @default(0)
+  currentValue         Float    @default(0)
+  totalProfit          Float    @default(0)
+  totalProfitPercent   Float    @default(0)
+  lastCalculated       DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Transaction {
+  id               String   @id @default(cuid())
+  clientId         String
+  client           Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  type             String   // buy, sell, transfer_in, transfer_out
+  category         String   // crypto, nft, real_estate, presale, memecoin
+  customCategory   String?  // When category is "autre"
+
+  asset            String   // Asset name (BTC, ETH, etc)
+  platform         String   // Binance, Coinbase, etc
+
+  amount           Float    // Quantity of asset
+  pricePerUnit     Float    // Price at transaction time (0 for transfers)
+  totalCost        Float    // amount * pricePerUnit (0 for transfers)
+  fees             Float    @default(0)
+  feesPercent      Float    @default(0)
+  feesCurrency     String?  // Currency used for fees: USD, USDT, or asset symbol
+
+  targetPrice      Float?   // Target price objective (min or single value)
+  targetPriceMax   Float?   // Target price max (for ranges)
+  currentPrice     Float?   // Current price (updated periodically)
+
+  // Transfer specific fields
+  transferFrom     String?  // Source wallet/exchange for transfer_in
+  transferTo       String?  // Destination wallet/exchange for transfer_out
+  transferAddress  String?  // Wallet address if applicable
+
+  // Presale specific fields
+  isPresale        Boolean  @default(false)
+  presaleEndDate   DateTime?
+  presaleTarget    Float?
+
+  profitLoss       Float    @default(0)
+  profitLossPercent Float   @default(0)
+
+  notes            String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model GlobalStats {
+  id                     String   @id @default(cuid())
+  totalAssetsUnderMgmt   Float    @default(0)
+  globalPerformance      Float    @default(0)
+  avgClientReturn        Float    @default(0)
+  totalCommissions       Float    @default(0)
+  activeClients          Int      @default(0)
+  lastCalculated         DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  asset     String   // BTC, ETH, etc
+  price     Float
+  timestamp DateTime @default(now())
+
+  @@index([asset, timestamp])
+}
