@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { convertToUSD } from '@/lib/currency'
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,6 +41,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email already exists' }, { status: 400 })
     }
 
+    // Convert budget to USD if needed
+    const currency = budgetCurrency || 'USD'
+    const budgetInUSD = await convertToUSD(parseFloat(budget), currency)
+
+    console.log(`Budget conversion: ${budget} ${currency} = ${budgetInUSD} USD`)
+
     // Create client without password (will use magic link)
     // Magic link expires in 48 hours
     const magicLinkExpiresAt = new Date()
@@ -55,8 +62,8 @@ export async function POST(request: NextRequest) {
         gender,
         nationality,
         riskLevel,
-        budget,
-        budgetCurrency: budgetCurrency || 'USD',
+        budget: budgetInUSD, // Always store in USD
+        budgetCurrency: currency, // Store original currency
         commissionPercent: commissionPercent || 0,
         avatar,
         magicLink,
@@ -64,6 +71,12 @@ export async function POST(request: NextRequest) {
         cardColor: cardColor || '#1a1a2e',
         cardDesign: cardDesign || 'gradient',
         cardGradient: cardGradient || '#16213e',
+        // Initialize stats fields
+        totalInvested: budgetInUSD,
+        totalCurrentValue: budgetInUSD,
+        totalProfitLoss: 0,
+        totalProfitLossPercent: 0,
+        totalFees: 0,
       },
     })
 
@@ -71,8 +84,8 @@ export async function POST(request: NextRequest) {
     await prisma.clientStats.create({
       data: {
         clientId: client.id,
-        totalInvested: budget,
-        currentValue: budget,
+        totalInvested: budgetInUSD,
+        currentValue: budgetInUSD,
         totalProfit: 0,
         totalProfitPercent: 0,
       },

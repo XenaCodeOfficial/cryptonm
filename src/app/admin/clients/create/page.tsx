@@ -405,7 +405,7 @@ export default function CreateClientPage() {
               <div className="mt-6">
                 <label className="block text-sm font-medium mb-2">Aperçu de la carte</label>
                 <div
-                  className="w-full max-w-md aspect-[1.586/1] rounded-xl p-6 text-white shadow-2xl relative overflow-hidden"
+                  className="w-full max-w-md aspect-[1.586/1] rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden"
                   style={{
                     background: formData.cardDesign === 'gradient'
                       ? `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardGradient})`
@@ -414,34 +414,45 @@ export default function CreateClientPage() {
                       : formData.cardColor
                   }}
                 >
-                  <div className="absolute top-4 left-4">
-                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center p-2">
+                  {/* Decorative elements */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
+
+                  {/* Logo */}
+                  <div className="absolute top-6 left-6">
+                    <div className="w-20 h-20 bg-white/15 backdrop-blur-md rounded-2xl flex items-center justify-center p-3 border border-white/20">
                       <div className="relative w-full h-full">
                         <Image
                           src="/assets/logos/logo-nm.png"
-                          alt="NM Logo"
+                          alt="Cryptonm"
                           fill
                           style={{ objectFit: 'contain' }}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="absolute top-4 right-4">
-                    <div className="w-10 h-8 bg-yellow-400/80 rounded-md"></div>
-                  </div>
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="text-2xl font-bold mb-2">
-                      {formData.firstName || 'Prénom'} {formData.lastName || 'Nom'}
+
+                  {/* Card Info */}
+                  <div className="absolute bottom-8 left-8 right-8">
+                    <div className="mb-6">
+                      <div className="text-xs opacity-60 uppercase tracking-wider mb-1">Titulaire</div>
+                      <div className="text-2xl font-bold tracking-wide">
+                        {formData.firstName || 'Prénom'} {formData.lastName || 'Nom'}
+                      </div>
                     </div>
+
                     <div className="flex justify-between items-end">
                       <div>
-                        <div className="text-xs opacity-70">Valeur actuelle</div>
-                        <div className="text-lg font-semibold">
-                          {formData.budget ? `${parseFloat(formData.budget).toLocaleString()} ${formData.budgetCurrency}` : '0.00 USD'}
+                        <div className="text-xs opacity-60 uppercase tracking-wider mb-1">Portefeuille</div>
+                        <div className="text-xl font-bold">
+                          {formData.budget ? `$${parseFloat(formData.budget).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00'} USD
                         </div>
                       </div>
-                      <div className="text-xs opacity-70">
-                        Neftali Manzambi
+                      <div className="text-right">
+                        <div className="text-xs opacity-60 uppercase tracking-wider">Cryptonm</div>
+                        <div className="text-xs opacity-80 font-mono">
+                          {new Date().getFullYear()}
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { convertToUSD } from '@/lib/currency'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +38,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       cardGradient,
     } = body
 
+    // Convert budget to USD if currency provided
+    let budgetInUSD = budget
+    if (budgetCurrency && budget) {
+      budgetInUSD = await convertToUSD(parseFloat(budget), budgetCurrency)
+      console.log(`Budget update conversion: ${budget} ${budgetCurrency} = ${budgetInUSD} USD`)
+    }
+
     const client = await prisma.client.update({
       where: { id },
       data: {
@@ -46,7 +54,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         gender,
         nationality,
         riskLevel,
-        budget,
+        budget: budgetInUSD,
         budgetCurrency,
         commissionPercent,
         avatar,
