@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
+import { put } from '@vercel/blob'
 import { nanoid } from 'nanoid'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
     if (!validTypes.includes(file.type)) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
     }
@@ -24,25 +24,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File too large' }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Create uploads directory if it doesn't exist
-    const uploadDir = join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
     // Generate unique filename
     const ext = file.name.split('.').pop()
-    const filename = `${nanoid()}.${ext}`
-    const filepath = join(uploadDir, filename)
+    const filename = `avatars/${nanoid()}.${ext}`
 
-    // Write file
-    await writeFile(filepath, buffer)
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    })
 
     // Return public URL
-    return NextResponse.json({ url: `/uploads/${filename}` })
+    return NextResponse.json({ url: blob.url })
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
