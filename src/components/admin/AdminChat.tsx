@@ -26,7 +26,6 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
   const [loading, setLoading] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -70,6 +69,9 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
         setMessages(prev => [...prev, message])
         setNewMessage('')
         scrollToBottom()
+
+        // Refresh message list to get updated unread counts
+        fetchMessages()
       }
     } catch (error) {
       console.error('Error sending message:', error)
@@ -79,19 +81,8 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
   }
 
   useEffect(() => {
+    // Fetch messages when component mounts or when chat opens/closes
     fetchMessages()
-
-    // Only poll when chat is closed (to update notification badge)
-    // When open, we fetch once and rely on manual refresh
-    if (!isOpen) {
-      pollingInterval.current = setInterval(fetchMessages, 10000) // 10 seconds
-    }
-
-    return () => {
-      if (pollingInterval.current) {
-        clearInterval(pollingInterval.current)
-      }
-    }
   }, [isOpen])
 
   useEffect(() => {
