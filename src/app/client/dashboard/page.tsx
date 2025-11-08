@@ -8,6 +8,8 @@ import ClientTransactionsView from '@/components/client/ClientTransactionsView'
 import CryptoMarketWidget from '@/components/shared/CryptoMarketWidget'
 import FloatingChatbot from '@/components/client/FloatingChatbot'
 import AutoRefreshPrices from '@/components/client/AutoRefreshPrices'
+import PortfolioAllocationWidget from '@/components/client/PortfolioAllocationWidget'
+import ExportButton from '@/components/common/ExportButton'
 
 export default async function ClientDashboard() {
   const session = await getServerSession(authOptions)
@@ -54,9 +56,16 @@ export default async function ClientDashboard() {
         <ClientStatsCards client={client} />
 
         <div className="mt-6 sm:mt-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-nm-text-secondary dark:text-nm-text-primary mb-4 sm:mb-6">
-            Mes Transactions
-          </h2>
+          <PortfolioAllocationWidget />
+        </div>
+
+        <div className="mt-6 sm:mt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-nm-text-secondary dark:text-nm-text-primary">
+              Mes Transactions
+            </h2>
+            <ExportButton role="client" />
+          </div>
           <ClientTransactionsView transactions={client.transactions} />
         </div>
 

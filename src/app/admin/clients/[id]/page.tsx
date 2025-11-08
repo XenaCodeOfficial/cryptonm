@@ -10,6 +10,7 @@ import AddTransactionButton from '@/components/admin/AddTransactionButton'
 import ManageBudgetButton from '@/components/admin/ManageBudgetButton'
 import CryptoMarketWidget from '@/components/shared/CryptoMarketWidget'
 import AutoRefreshPrices from '@/components/admin/AutoRefreshPrices'
+import ExportButton from '@/components/common/ExportButton'
 
 export default async function ClientDetailPage({
   params,
@@ -71,6 +72,7 @@ export default async function ClientDetailPage({
                 Transactions
               </h2>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                <ExportButton clientId={client.id} role="admin" />
                 <ManageBudgetButton clientId={client.id} currentBudget={client.budget} />
                 <AddTransactionButton clientId={client.id} />
               </div>
