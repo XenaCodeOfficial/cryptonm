@@ -1,328 +1,36 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import HeaderWrapper from '@/components/layout/HeaderWrapper'
-import Image from 'next/image'
+import AdminProfileClient from '@/components/admin/AdminProfileClient'
 
-export default function AdminProfilePage() {
-  const { data: session, update } = useSession()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+export default async function AdminProfilePage() {
+  const session = await getServerSession(authOptions)
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    avatar: '',
+  if (!session || session.user.role !== 'admin') {
+    redirect('/login')
+  }
+
+  const admin = await prisma.admin.findUnique({
+    where: { id: session.user.id },
   })
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  })
-
-  useEffect(() => {
-    if (session?.user) {
-      setFormData({
-        name: session.user.name || '',
-        email: session.user.email || '',
-        avatar: session.user.image || '',
-      })
-    }
-  }, [session])
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingAvatar(true)
-    const formDataUpload = new FormData()
-    formDataUpload.append('file', file)
-
-    try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formDataUpload,
-      })
-
-      if (!response.ok) throw new Error('Upload failed')
-
-      const data = await response.json()
-      setFormData((prev) => ({ ...prev, avatar: data.url }))
-    } catch (err) {
-      setError('Error uploading avatar')
-    } finally {
-      setUploadingAvatar(false)
-    }
+  if (!admin) {
+    redirect('/login')
   }
-
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-    setLoading(true)
-
-    try {
-      const response = await fetch('/api/admin/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          avatar: formData.avatar,
-        }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Error updating profile')
-      }
-
-      setSuccess('Profile updated successfully')
-      await update({ name: formData.name, image: formData.avatar })
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError('New passwords do not match')
-      return
-    }
-
-    if (passwordData.newPassword.length < 8) {
-      setError('Password must be at least 8 characters')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const response = await fetch('/api/admin/password', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword,
-        }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Error updating password')
-      }
-
-      setSuccess('Password updated successfully')
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      })
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (!session) return null
 
   return (
     <div className="min-h-screen">
       <HeaderWrapper
         user={{
-          name: session.user.name,
-          email: session.user.email,
-          avatar: session.user.image,
+          name: admin.name,
+          email: admin.email,
+          avatar: admin.avatar,
         }}
         role="admin"
       />
-
-      <main className="max-w-4xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-nm-header dark:text-nm-text-primary hover:underline mb-4"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back
-          </button>
-          <h1 className="text-3xl font-bold text-nm-text-secondary dark:text-nm-text-primary">
-            Profile Settings
-          </h1>
-        </div>
-
-        {error && (
-          <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 mb-6">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 mb-6">
-            {success}
-          </div>
-        )}
-
-        {/* Profile Information */}
-        <div className="bg-white dark:bg-nm-card-dark shadow-md p-8 card mb-6">
-          <h2 className="text-xl font-semibold mb-6 text-nm-text-secondary dark:text-nm-text-primary">
-            Profile Information
-          </h2>
-
-          <form onSubmit={handleProfileSubmit} className="space-y-6">
-            {/* Avatar */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Profile Picture</label>
-              <div className="flex items-center gap-6">
-                {formData.avatar ? (
-                  <div className="relative w-24 h-24">
-                    <Image
-                      src={formData.avatar}
-                      alt="Avatar"
-                      fill
-                      className="object-cover rounded-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-24 h-24 bg-nm-accent text-nm-text-secondary rounded-full flex items-center justify-center font-bold text-2xl">
-                    {formData.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    disabled={uploadingAvatar}
-                    className="w-full"
-                  />
-                  {uploadingAvatar && <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Uploading...</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full"
-                required
-              />
-            </div>
-
-            {/* Email (read-only) */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                className="w-full bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
-                disabled
-              />
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Email cannot be changed
-              </p>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="btn-secondary flex-1"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex-1 disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Change Password */}
-        <div className="bg-white dark:bg-nm-card-dark shadow-md p-8 card">
-          <h2 className="text-xl font-semibold mb-6 text-nm-text-secondary dark:text-nm-text-primary">
-            Change Password
-          </h2>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">Current Password</label>
-              <input
-                type="password"
-                value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">New Password</label>
-              <input
-                type="password"
-                value={passwordData.newPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                className="w-full"
-                required
-                minLength={8}
-              />
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Minimum 8 characters
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Confirm New Password</label>
-              <input
-                type="password"
-                value={passwordData.confirmPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })}
-                className="btn-secondary flex-1"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex-1 disabled:opacity-50"
-              >
-                {loading ? 'Updating...' : 'Update Password'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </main>
+      <AdminProfileClient admin={admin} />
     </div>
   )
 }
