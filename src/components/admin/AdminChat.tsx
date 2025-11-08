@@ -81,8 +81,11 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
   useEffect(() => {
     fetchMessages()
 
-    // Poll for new messages every 3 seconds
-    pollingInterval.current = setInterval(fetchMessages, 3000)
+    // Only poll when chat is closed (to update notification badge)
+    // When open, we fetch once and rely on manual refresh
+    if (!isOpen) {
+      pollingInterval.current = setInterval(fetchMessages, 10000) // 10 seconds
+    }
 
     return () => {
       if (pollingInterval.current) {

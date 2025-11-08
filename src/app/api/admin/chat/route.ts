@@ -14,28 +14,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const messages = await prisma.chatMessage.findMany({
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            avatar: true,
+    // Use a single transaction to get both messages and count
+    const [messages, unreadCount] = await prisma.$transaction([
+      prisma.chatMessage.findMany({
+        include: {
+          admin: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-      take: 100, // Last 100 messages
-    })
-
-    // Count unread messages
-    const unreadCount = await prisma.chatMessage.count({
-      where: {
-        isRead: false,
-      },
-    })
+        orderBy: {
+          createdAt: 'asc',
+        },
+        take: 100, // Last 100 messages
+      }),
+      prisma.chatMessage.count({
+        where: {
+          isRead: false,
+        },
+      }),
+    ])
 
     return NextResponse.json({ messages, unreadCount })
   } catch (error: any) {
