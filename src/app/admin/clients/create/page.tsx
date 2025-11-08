@@ -432,6 +432,18 @@ export default function CreateClientPage() {
                     </div>
                   </div>
 
+                  {/* Chip */}
+                  <div className="absolute top-24 left-6">
+                    <div className="relative w-12 h-10">
+                      <Image
+                        src="/assets/images/chipset-card-credit.png"
+                        alt="Chip"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                  </div>
+
                   {/* Card Info */}
                   <div className="absolute bottom-8 left-8 right-8">
                     <div className="mb-6">
