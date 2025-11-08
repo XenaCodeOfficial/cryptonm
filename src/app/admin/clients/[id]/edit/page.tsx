@@ -3,9 +3,14 @@ import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import HeaderWrapper from '@/components/layout/HeaderWrapper'
-import AdminProfileClient from '@/components/admin/AdminProfileClient'
+import EditClientForm from '@/components/admin/EditClientForm'
 
-export default async function AdminProfilePage() {
+type PageProps = {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditClientPage({ params }: PageProps) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
 
   if (!session || session.user.role !== 'admin') {
@@ -20,6 +25,14 @@ export default async function AdminProfilePage() {
     redirect('/login')
   }
 
+  const client = await prisma.client.findUnique({
+    where: { id },
+  })
+
+  if (!client) {
+    redirect('/admin/dashboard')
+  }
+
   return (
     <div className="min-h-screen">
       <HeaderWrapper
@@ -31,7 +44,7 @@ export default async function AdminProfilePage() {
         }}
         role="admin"
       />
-      <AdminProfileClient admin={admin} />
+      <EditClientForm client={client} />
     </div>
   )
 }

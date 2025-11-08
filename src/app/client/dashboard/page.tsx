@@ -10,6 +10,7 @@ import FloatingChatbot from '@/components/client/FloatingChatbot'
 import AutoRefreshPrices from '@/components/client/AutoRefreshPrices'
 import PortfolioAllocationWidget from '@/components/client/PortfolioAllocationWidget'
 import ExportButton from '@/components/common/ExportButton'
+import ClientCard from '@/components/common/ClientCard'
 
 export default async function ClientDashboard() {
   const session = await getServerSession(authOptions)
@@ -51,6 +52,11 @@ export default async function ClientDashboard() {
             Mon Portefeuille
           </h1>
           <AutoRefreshPrices />
+        </div>
+
+        {/* Client Card */}
+        <div className="mb-8">
+          <ClientCard client={client} />
         </div>
 
         <ClientStatsCards client={client} />

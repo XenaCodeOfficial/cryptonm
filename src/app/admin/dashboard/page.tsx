@@ -69,6 +69,7 @@ export default async function AdminDashboard() {
     <div className="min-h-screen">
       <HeaderWrapper
         user={{
+          id: admin.id,
           name: admin.name,
           email: admin.email,
           avatar: admin.avatar,

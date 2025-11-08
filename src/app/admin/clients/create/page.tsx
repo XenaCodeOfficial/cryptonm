@@ -22,10 +22,14 @@ export default function CreateClientPage() {
     nationality: '',
     riskLevel: 'medium',
     budget: '',
+    budgetCurrency: 'USD',
     commissionPercent: '',
     noCommission: false,
     avatar: '',
     letClientUpload: false,
+    cardColor: '#1a1a2e',
+    cardDesign: 'gradient',
+    cardGradient: '#16213e',
   })
 
   const [magicLink, setMagicLink] = useState<string>('')
@@ -101,6 +105,7 @@ export default function CreateClientPage() {
     <div className="min-h-screen">
       <HeaderWrapper
         user={{
+          id: session.user.id,
           name: session.user.name,
           email: session.user.email,
           avatar: session.user.image,
@@ -205,18 +210,34 @@ export default function CreateClientPage() {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
               <h3 className="text-lg font-semibold mb-4">Informations d'investissement</h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Budget initial (USD) *</label>
-                  <input
-                    type="number"
-                    value={formData.budget}
-                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                    className="w-full"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Budget initial *</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={formData.budget}
+                      onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                      className="flex-1"
+                      required
+                      min="0"
+                      step="0.01"
+                      placeholder="Montant"
+                    />
+                    <select
+                      value={formData.budgetCurrency}
+                      onChange={(e) => setFormData({ ...formData, budgetCurrency: e.target.value })}
+                      className="w-24"
+                      required
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="CHF">CHF</option>
+                    </select>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Sera converti en USD pour les opérations
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Niveau de risque *</label>
@@ -319,6 +340,102 @@ export default function CreateClientPage() {
                   </p>
                 </div>
               )}
+            </div>
+
+            {/* Card Customization */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-lg font-semibold mb-4">Personnalisation de la carte client</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Style de carte</label>
+                  <select
+                    value={formData.cardDesign}
+                    onChange={(e) => setFormData({ ...formData, cardDesign: e.target.value })}
+                    className="w-full"
+                  >
+                    <option value="gradient">Dégradé</option>
+                    <option value="solid">Uni</option>
+                    <option value="pattern">Motif</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Couleur principale</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={formData.cardColor}
+                      onChange={(e) => setFormData({ ...formData, cardColor: e.target.value })}
+                      className="w-16 h-10 rounded cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={formData.cardColor}
+                      onChange={(e) => setFormData({ ...formData, cardColor: e.target.value })}
+                      className="flex-1"
+                      placeholder="#1a1a2e"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {formData.cardDesign === 'gradient' && (
+                <div className="mt-6">
+                  <label className="block text-sm font-medium mb-2">Couleur secondaire (dégradé)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={formData.cardGradient}
+                      onChange={(e) => setFormData({ ...formData, cardGradient: e.target.value })}
+                      className="w-16 h-10 rounded cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={formData.cardGradient}
+                      onChange={(e) => setFormData({ ...formData, cardGradient: e.target.value })}
+                      className="flex-1"
+                      placeholder="#16213e"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Card Preview */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium mb-2">Aperçu de la carte</label>
+                <div
+                  className="w-full max-w-md aspect-[1.586/1] rounded-xl p-6 text-white shadow-2xl relative overflow-hidden"
+                  style={{
+                    background: formData.cardDesign === 'gradient'
+                      ? `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardGradient})`
+                      : formData.cardDesign === 'pattern'
+                      ? `${formData.cardColor} url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                      : formData.cardColor
+                  }}
+                >
+                  <div className="absolute top-4 left-4">
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center text-xs font-bold">
+                      NM
+                    </div>
+                  </div>
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="text-2xl font-bold mb-2">
+                      {formData.firstName || 'Prénom'} {formData.lastName || 'Nom'}
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <div className="text-xs opacity-70">Valeur actuelle</div>
+                        <div className="text-lg font-semibold">
+                          {formData.budget ? `${parseFloat(formData.budget).toLocaleString()} ${formData.budgetCurrency}` : '0.00 USD'}
+                        </div>
+                      </div>
+                      <div className="text-xs opacity-70">
+                        Neftali Manzambi
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {error && (

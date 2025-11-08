@@ -6,12 +6,14 @@ import Image from 'next/image'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useCurrency } from '@/components/providers/CurrencyProvider'
 import { useState } from 'react'
+import AdminChat from '@/components/admin/AdminChat'
 
 type HeaderWrapperProps = {
   user: {
     name: string
     email: string
     avatar?: string | null
+    id?: string
   }
   role: 'admin' | 'client'
 }
@@ -76,6 +78,9 @@ export default function HeaderWrapper({ user, role }: HeaderWrapperProps) {
 
           {/* Right: Controls and User (Desktop) */}
           <div className="hidden md:flex items-center gap-4 lg:gap-6">
+            {/* Admin Chat */}
+            {role === 'admin' && user.id && <AdminChat currentAdminId={user.id} />}
+
             {/* Currency Selector */}
             <div className="flex items-center gap-2 bg-white/10 px-3 py-2">
               {(['USD', 'EUR', 'CHF'] as const).map((curr) => (

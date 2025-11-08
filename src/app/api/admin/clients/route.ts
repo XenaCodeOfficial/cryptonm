@@ -22,9 +22,13 @@ export async function POST(request: NextRequest) {
       nationality,
       riskLevel,
       budget,
+      budgetCurrency,
       commissionPercent,
       avatar,
       magicLink,
+      cardColor,
+      cardDesign,
+      cardGradient,
     } = body
 
     // Check if email already exists
@@ -52,10 +56,14 @@ export async function POST(request: NextRequest) {
         nationality,
         riskLevel,
         budget,
+        budgetCurrency: budgetCurrency || 'USD',
         commissionPercent: commissionPercent || 0,
         avatar,
         magicLink,
         magicLinkExpiresAt,
+        cardColor: cardColor || '#1a1a2e',
+        cardDesign: cardDesign || 'gradient',
+        cardGradient: cardGradient || '#16213e',
       },
     })
 

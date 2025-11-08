@@ -11,6 +11,7 @@ import ManageBudgetButton from '@/components/admin/ManageBudgetButton'
 import CryptoMarketWidget from '@/components/shared/CryptoMarketWidget'
 import AutoRefreshPrices from '@/components/admin/AutoRefreshPrices'
 import ExportButton from '@/components/common/ExportButton'
+import ClientCard from '@/components/common/ClientCard'
 
 export default async function ClientDetailPage({
   params,
@@ -51,6 +52,7 @@ export default async function ClientDetailPage({
     <div className="min-h-screen">
       <HeaderWrapper
         user={{
+          id: admin.id,
           name: admin.name,
           email: admin.email,
           avatar: admin.avatar,
@@ -60,6 +62,11 @@ export default async function ClientDetailPage({
 
       <main className="max-w-[1920px] mx-auto px-6 py-8">
         <ClientDetailHeader client={client} />
+
+        {/* Client Card */}
+        <div className="mt-8 mb-8">
+          <ClientCard client={client} />
+        </div>
 
         <div className="flex justify-end mt-4 mb-2">
           <AutoRefreshPrices clientId={client.id} />
