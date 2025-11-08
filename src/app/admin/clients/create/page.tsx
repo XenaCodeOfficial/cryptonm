@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import HeaderWrapper from '@/components/layout/HeaderWrapper'
 import { useSession } from 'next-auth/react'
@@ -13,6 +13,7 @@ export default function CreateClientPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [previewBudgetUSD, setPreviewBudgetUSD] = useState(0)
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -34,6 +35,49 @@ export default function CreateClientPage() {
   })
 
   const [magicLink, setMagicLink] = useState<string>('')
+
+  // Convert budget to USD for preview
+  useEffect(() => {
+    const convertBudgetForPreview = async () => {
+      if (!formData.budget || !formData.budgetCurrency) {
+        setPreviewBudgetUSD(0)
+        return
+      }
+
+      const budget = parseFloat(formData.budget)
+      if (isNaN(budget)) {
+        setPreviewBudgetUSD(0)
+        return
+      }
+
+      if (formData.budgetCurrency === 'USD') {
+        setPreviewBudgetUSD(budget)
+        return
+      }
+
+      try {
+        // Fetch exchange rates from our API
+        const response = await fetch('/api/exchange-rates')
+        if (response.ok) {
+          const data = await response.json()
+          const rate = data.rates[formData.budgetCurrency]
+          if (rate) {
+            const usdAmount = budget / rate
+            setPreviewBudgetUSD(Math.round(usdAmount * 100) / 100)
+          } else {
+            setPreviewBudgetUSD(budget)
+          }
+        } else {
+          setPreviewBudgetUSD(budget)
+        }
+      } catch (error) {
+        console.error('Error converting currency for preview:', error)
+        setPreviewBudgetUSD(budget)
+      }
+    }
+
+    convertBudgetForPreview()
+  }, [formData.budget, formData.budgetCurrency])
 
   const generateMagicLink = () => {
     const link = nanoid(32)
@@ -457,7 +501,7 @@ export default function CreateClientPage() {
                       <div>
                         <div className="text-xs opacity-60 uppercase tracking-wider mb-1">Portefeuille</div>
                         <div className="text-xl font-bold">
-                          {formData.budget ? `$${parseFloat(formData.budget).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00'} USD
+                          ${previewBudgetUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                         </div>
                       </div>
                       <div className="text-right">
