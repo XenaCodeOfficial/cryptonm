@@ -30,7 +30,14 @@ export async function GET(request: NextRequest) {
       take: 100, // Last 100 messages
     })
 
-    return NextResponse.json(messages)
+    // Count unread messages
+    const unreadCount = await prisma.chatMessage.count({
+      where: {
+        isRead: false,
+      },
+    })
+
+    return NextResponse.json({ messages, unreadCount })
   } catch (error: any) {
     console.error('Error fetching chat messages:', error)
     return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 })

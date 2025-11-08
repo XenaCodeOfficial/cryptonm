@@ -137,7 +137,9 @@ model ChatMessage {
   adminId   String
   admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
   message   String
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+  @@index([isRead])
 }

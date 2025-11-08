@@ -52,7 +52,7 @@ export default function ClientCard({ client, className = '' }: ClientCardProps) 
       </div>
 
       {/* Chip */}
-      <div className="absolute top-24 left-6">
+      <div className="absolute top-6 right-6">
         <div className="relative w-12 h-10">
           <Image
             src="/assets/images/chipset-card-credit.png"

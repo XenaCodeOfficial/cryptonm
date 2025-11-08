@@ -6,6 +6,7 @@ import Image from 'next/image'
 type ChatMessage = {
   id: string
   message: string
+  isRead: boolean
   createdAt: string
   admin: {
     id: string
@@ -36,12 +37,11 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
       const response = await fetch('/api/admin/chat')
       if (response.ok) {
         const data = await response.json()
-        const oldLength = messages.length
-        setMessages(data)
+        setMessages(data.messages)
 
-        // Update unread count if chat is closed
-        if (!isOpen && data.length > oldLength) {
-          setUnreadCount(prev => prev + (data.length - oldLength))
+        // Update unread count from server
+        if (!isOpen) {
+          setUnreadCount(data.unreadCount)
         }
 
         if (isOpen) {
@@ -95,6 +95,13 @@ export default function AdminChat({ currentAdminId }: AdminChatProps) {
     if (isOpen) {
       setUnreadCount(0)
       scrollToBottom()
+
+      // Mark all messages as read when opening chat
+      fetch('/api/admin/chat/mark-read', {
+        method: 'POST',
+      }).catch(error => {
+        console.error('Error marking messages as read:', error)
+      })
     }
   }, [isOpen])
 
