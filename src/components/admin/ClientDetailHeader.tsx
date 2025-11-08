@@ -237,7 +237,7 @@ export default function ClientDetailHeader({ client }: { client: Client }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/magic/${client.magicLink}`)
+                navigator.clipboard.writeText(`https://www.cryptonm.ch/magic/${client.magicLink}`)
                 alert('Magic link copié dans le presse-papiers!')
               }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
