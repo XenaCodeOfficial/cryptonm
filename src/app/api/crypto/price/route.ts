@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY
 
 // Map common symbols to CoinGecko IDs
