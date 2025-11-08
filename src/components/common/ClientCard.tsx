@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 type ClientCardProps = {
   client: {
     firstName: string
@@ -33,8 +35,15 @@ export default function ClientCard({ client, className = '' }: ClientCardProps) 
     >
       {/* Logo */}
       <div className="absolute top-4 left-4">
-        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center text-xs font-bold">
-          NM
+        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center p-2">
+          <div className="relative w-full h-full">
+            <Image
+              src="/assets/logos/logo-nm.png"
+              alt="NM Logo"
+              fill
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
         </div>
       </div>
 
