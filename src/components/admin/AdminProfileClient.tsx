@@ -51,7 +51,7 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
       const data = await response.json()
       setFormData((prev) => ({ ...prev, avatar: data.url }))
     } catch (err) {
-      setError('Error uploading avatar')
+      setError('Erreur lors du téléchargement de la photo')
     } finally {
       setUploadingAvatar(false)
     }
@@ -75,10 +75,10 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Error updating profile')
+        throw new Error(data.error || 'Erreur lors de la mise à jour du profil')
       }
 
-      setSuccess('Profile updated successfully')
+      setSuccess('Profil mis à jour avec succès')
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -93,12 +93,12 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
     setSuccess('')
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError('New passwords do not match')
+      setError('Les nouveaux mots de passe ne correspondent pas')
       return
     }
 
     if (passwordData.newPassword.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError('Le mot de passe doit contenir au moins 8 caractères')
       return
     }
 
@@ -116,10 +116,10 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Error updating password')
+        throw new Error(data.error || 'Erreur lors de la mise à jour du mot de passe')
       }
 
-      setSuccess('Password updated successfully')
+      setSuccess('Mot de passe mis à jour avec succès')
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -142,10 +142,10 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back
+          Retour
         </button>
         <h1 className="text-3xl font-bold text-nm-text-secondary dark:text-nm-text-primary">
-          Profile Settings
+          Paramètres du Profil
         </h1>
       </div>
 
@@ -164,13 +164,13 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
       {/* Profile Information */}
       <div className="bg-white dark:bg-nm-card-dark shadow-md p-8 card mb-6">
         <h2 className="text-xl font-semibold mb-6 text-nm-text-secondary dark:text-nm-text-primary">
-          Profile Information
+          Informations du Profil
         </h2>
 
         <form onSubmit={handleProfileSubmit} className="space-y-6">
           {/* Avatar */}
           <div>
-            <label className="block text-sm font-medium mb-2">Profile Picture</label>
+            <label className="block text-sm font-medium mb-2">Photo de Profil</label>
             <div className="flex items-center gap-6">
               {formData.avatar ? (
                 <div className="relative w-24 h-24">
@@ -194,14 +194,14 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
                   disabled={uploadingAvatar}
                   className="w-full"
                 />
-                {uploadingAvatar && <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Uploading...</p>}
+                {uploadingAvatar && <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Téléchargement...</p>}
               </div>
             </div>
           </div>
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium mb-2">Name</label>
+            <label className="block text-sm font-medium mb-2">Nom</label>
             <input
               type="text"
               value={formData.name}
@@ -221,7 +221,7 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
               disabled
             />
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              Email cannot be changed
+              L'email ne peut pas être modifié
             </p>
           </div>
 
@@ -231,14 +231,14 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
               onClick={() => router.back()}
               className="btn-secondary flex-1"
             >
-              Cancel
+              Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
               className="btn-primary flex-1 disabled:opacity-50"
             >
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? 'Enregistrement...' : 'Enregistrer les Modifications'}
             </button>
           </div>
         </form>
@@ -247,12 +247,12 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
       {/* Change Password */}
       <div className="bg-white dark:bg-nm-card-dark shadow-md p-8 card">
         <h2 className="text-xl font-semibold mb-6 text-nm-text-secondary dark:text-nm-text-primary">
-          Change Password
+          Changer le Mot de Passe
         </h2>
 
         <form onSubmit={handlePasswordSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Current Password</label>
+            <label className="block text-sm font-medium mb-2">Mot de Passe Actuel</label>
             <input
               type="password"
               value={passwordData.currentPassword}
@@ -263,7 +263,7 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">New Password</label>
+            <label className="block text-sm font-medium mb-2">Nouveau Mot de Passe</label>
             <input
               type="password"
               value={passwordData.newPassword}
@@ -273,12 +273,12 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
               minLength={8}
             />
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              Minimum 8 characters
+              Minimum 8 caractères
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+            <label className="block text-sm font-medium mb-2">Confirmer le Nouveau Mot de Passe</label>
             <input
               type="password"
               value={passwordData.confirmPassword}
@@ -294,14 +294,14 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
               onClick={() => setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })}
               className="btn-secondary flex-1"
             >
-              Cancel
+              Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
               className="btn-primary flex-1 disabled:opacity-50"
             >
-              {loading ? 'Updating...' : 'Update Password'}
+              {loading ? 'Mise à jour...' : 'Mettre à Jour le Mot de Passe'}
             </button>
           </div>
         </form>

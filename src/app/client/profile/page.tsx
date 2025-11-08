@@ -75,7 +75,7 @@ export default function ClientProfilePage() {
       const data = await response.json()
       setFormData((prev) => ({ ...prev, avatar: data.url }))
     } catch (err) {
-      setError('Error uploading avatar')
+      setError('Erreur lors du téléchargement de la photo')
     } finally {
       setUploadingAvatar(false)
     }
@@ -103,10 +103,10 @@ export default function ClientProfilePage() {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Error updating profile')
+        throw new Error(data.error || 'Erreur lors de la mise à jour du profil')
       }
 
-      setSuccess('Profile updated successfully')
+      setSuccess('Profil mis à jour avec succès')
       await update({
         name: `${formData.firstName} ${formData.lastName}`,
         image: formData.avatar,
@@ -124,12 +124,12 @@ export default function ClientProfilePage() {
     setSuccess('')
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError('New passwords do not match')
+      setError('Les nouveaux mots de passe ne correspondent pas')
       return
     }
 
     if (passwordData.newPassword.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError('Le mot de passe doit contenir au moins 8 caractères')
       return
     }
 
@@ -147,10 +147,10 @@ export default function ClientProfilePage() {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Error updating password')
+        throw new Error(data.error || 'Erreur lors de la mise à jour du mot de passe')
       }
 
-      setSuccess('Password updated successfully')
+      setSuccess('Mot de passe mis à jour avec succès')
       setPasswordData({
         currentPassword: '',
         newPassword: '',
