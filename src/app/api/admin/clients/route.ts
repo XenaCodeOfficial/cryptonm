@@ -37,6 +37,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Create client without password (will use magic link)
+    // Magic link expires in 48 hours
+    const magicLinkExpiresAt = new Date()
+    magicLinkExpiresAt.setHours(magicLinkExpiresAt.getHours() + 48)
+
     const client = await prisma.client.create({
       data: {
         firstName,
@@ -51,6 +55,7 @@ export async function POST(request: NextRequest) {
         commissionPercent: commissionPercent || 0,
         avatar,
         magicLink,
+        magicLinkExpiresAt,
       },
     })
 

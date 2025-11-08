@@ -16,5 +16,15 @@ export default async function MagicLinkPage({
     redirect('/login?error=invalid_magic_link')
   }
 
+  // Check if magic link has expired (48 hours)
+  if (client.magicLinkExpiresAt && new Date() > client.magicLinkExpiresAt) {
+    redirect('/login?error=magic_link_expired')
+  }
+
+  // If client already has a password, magic link shouldn't be used again
+  if (client.password) {
+    redirect('/login?error=magic_link_already_used')
+  }
+
   return <MagicLinkClient client={client} />
 }

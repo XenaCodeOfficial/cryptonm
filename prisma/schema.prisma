@@ -31,6 +31,7 @@ model Client {
   commissionPercent      Float          @default(0)
   avatar                 String?
   magicLink              String         @unique
+  magicLinkExpiresAt     DateTime?
 
   // Stats fields (calculated from transactions)
   totalInvested          Float          @default(0)
