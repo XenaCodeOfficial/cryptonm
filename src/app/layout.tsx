@@ -7,8 +7,11 @@ import { CurrencyProvider } from '@/components/providers/CurrencyProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'NM Crypto - Gestion de Portefeuille',
+  title: 'Cryptonm - Gestion de Portefeuille',
   description: 'Plateforme professionnelle de gestion crypto par Neftali Manzambi',
+  icons: {
+    icon: '/assets/logos/logo-cryptonm-favicon.png',
+  },
 }
 
 export default function RootLayout({

@@ -102,7 +102,7 @@ export default function FloatingChatbot() {
               />
             </div>
             <div>
-              <h3 className="font-bold">Assistant NM Crypto</h3>
+              <h3 className="font-bold">Assistant Cryptonm</h3>
               <p className="text-xs opacity-90">Posez-moi vos questions</p>
             </div>
           </div>

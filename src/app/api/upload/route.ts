@@ -17,10 +17,13 @@ export async function POST(request: NextRequest) {
     console.log('File received:', file.name, file.type, file.size)
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
     if (!validTypes.includes(file.type)) {
       console.error('Invalid file type:', file.type)
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
+      return NextResponse.json({
+        error: 'Type de fichier invalide. Formats acceptés: PNG, JPG, WEBP, GIF, AVIF',
+        details: `Type reçu: ${file.type}`
+      }, { status: 400 })
     }
 
     // Validate file size (max 5MB)

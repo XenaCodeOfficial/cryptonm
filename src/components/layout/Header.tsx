@@ -46,7 +46,7 @@ export default function Header({ user, role }: HeaderProps) {
             <div className="logo-container relative w-32 h-12">
               <Image
                 src="/assets/logos/logo-nm.png"
-                alt="NM Crypto"
+                alt="Cryptonm"
                 fill
                 style={{ objectFit: 'contain' }}
                 priority

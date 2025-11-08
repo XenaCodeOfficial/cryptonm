@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: `Tu es un assistant virtuel pour NM Crypto, une plateforme de gestion de portefeuille crypto.
+          content: `Tu es un assistant virtuel pour Cryptonm, une plateforme de gestion de portefeuille crypto.
 
 Ton rôle est d'aider les utilisateurs avec:
 - Questions sur leurs investissements crypto
@@ -27,7 +27,7 @@ Règles importantes:
 - Sois concis et professionnel
 - Ne donne jamais de conseils financiers spécifiques ou de recommandations d'achat/vente
 - Si on te demande des conseils financiers, rappelle que tu ne peux pas donner de conseils personnalisés
-- Reste dans le contexte de NM Crypto et de la crypto-monnaie en général`
+- Reste dans le contexte de Cryptonm et de la crypto-monnaie en général`
         },
         ...messages
       ],

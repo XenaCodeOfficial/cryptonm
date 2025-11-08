@@ -76,7 +76,7 @@ function LoginForm() {
             <div className="logo-container relative w-48 h-24">
               <Image
                 src="/assets/logos/logo-nm.png"
-                alt="NM Crypto"
+                alt="Cryptonm"
                 fill
                 style={{ objectFit: 'contain' }}
                 priority
